@@ -36,7 +36,7 @@ io.on("connection", (client) => {
                     text: "",
                     players: [],
                     started: false,
-                    completed: 0
+                    completed: 0,
                 }
             }
 
@@ -48,7 +48,8 @@ io.on("connection", (client) => {
                     username,
                     progress: 0,
                     socketId: client.id,
-                    ready: false
+                    ready: false,
+                    color: "#ffffff"
                 }
             );
 
@@ -75,10 +76,13 @@ io.on("connection", (client) => {
                     }, 5000); 
                 }
             }
-
             if (games[gameId].text.length > 0) {
                 io.to(gameId).emit("message", games[gameId]);
             }
+        }).on('changeColor', (message) => {
+            let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
+            games[gameId].players[idx].progress = message.color;
+            io.to(gameId).emit(games[gameId]);
         }).on('ready', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
             games[gameId].players[idx].ready = message.ready;
