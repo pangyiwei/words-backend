@@ -96,7 +96,7 @@ io.on("connection", (client) => {
                     io.to(gameId).emit('start', games[gameId]);
                 });
             } else {
-                client.emit(games[gameId]);
+                io.to(gameId).emit(games[gameId]);
             }            
         }).on('disconnect', () => {
             games[gameId].players = games[gameId].players.filter(player => player.socketId !== client.id);
