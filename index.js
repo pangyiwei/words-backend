@@ -64,9 +64,9 @@ io.on("connection", (client) => {
 
                 if (games[gameId].completed >= numWinners) {
                     console.log(`Game ${gameId} Complete`);
-                    games[gameId].started = false;
                     io.to(gameId).emit("end", {ended: true});
                     setTimeout(() => {
+                        games[gameId].started = false;
                         games[gameId].text = "";
                         games[gameId].completed = 0;
                         games[gameId].players.forEach(player => {player.progress = 0});
