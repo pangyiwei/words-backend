@@ -71,7 +71,11 @@ io.on("connection", (client) => {
                         games[gameId].started = false;
                         games[gameId].text = "";
                         games[gameId].completed = 0;
-                        games[gameId].players.forEach(player => {player.progress = 0; player.ready = false});
+                        games[gameId].players.forEach(player => {
+                            player.progress = 0;
+                            player.ready = false;
+                            player.position = null
+                        });
                         io.to(gameId).emit("message", games[gameId]);
                     }, 5000); 
                 }
