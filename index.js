@@ -82,7 +82,7 @@ io.on("connection", (client) => {
         }).on('changeColor', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
             games[gameId].players[idx].progress = message.color;
-            io.to(gameId).emit(games[gameId]);
+            io.to(gameId).emit("message", games[gameId]);
         }).on('ready', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
             games[gameId].players[idx].ready = message.ready;
