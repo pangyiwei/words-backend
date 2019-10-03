@@ -4,6 +4,7 @@ const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 const randomText = require('./randomText');
+const randomName = require('./randomName');
 
 const PORT = process.env.PORT || 8090;
 
