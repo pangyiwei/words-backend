@@ -11,17 +11,18 @@ const PORT = process.env.PORT || 8090;
 
 let games = {};
 // Enable CORS for dev
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+// app.use(function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header('Access-Control-Allow-Credentials', true);
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 
 // Serve any static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
+    console.log(path.join(__dirname, 'public', 'build', 'index.html'));
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
