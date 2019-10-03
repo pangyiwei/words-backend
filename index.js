@@ -65,7 +65,7 @@ io.on("connection", (client) => {
                 const numWinners = Math.min(3, games[gameId].players.length);
 
                 if (games[gameId].completed >= numWinners) {
-                    console.log(`Game ${gameId} Complete`);
+                    // console.log(`Game ${gameId} Complete`);
                     io.to(gameId).emit("end", {ended: true});
                     setTimeout(() => {
                         games[gameId].started = false;
