@@ -47,7 +47,8 @@ io.on("connection", (client) => {
                 {
                     username,
                     progress: 0,
-                    socketId: client.id
+                    socketId: client.id,
+                    ready: false
                 }
             );
 
@@ -69,27 +70,34 @@ io.on("connection", (client) => {
                         games[gameId].started = false;
                         games[gameId].text = "";
                         games[gameId].completed = 0;
-                        games[gameId].players.forEach(player => {player.progress = 0});
+                        games[gameId].players.forEach(player => {player.progress = 0; player.ready = false});
                         io.to(gameId).emit("message", games[gameId]);
-                    }, 3000); 
+                    }, 5000); 
                 }
             }
 
             if (games[gameId].text.length > 0) {
                 io.to(gameId).emit("message", games[gameId]);
             }
-        }).on('start', (message) => {
-            games[gameId].started = true;
-            games[gameId].completed = 0;
-            randomText.getRandomTextWeb(2).then(text => {
-                games[gameId].text = text;
-                io.to(gameId).emit('start', games[gameId]);
-                // console.log(games[gameId]);
-            }).catch(err => {
-                games[gameId].text = randomText.getRandomText(2);
-                console.log("API failed, using local generator");
-                io.to(gameId).emit('start', games[gameId]);
-            });
+        }).on('ready', (message) => {
+            let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
+            games[gameId].players[idx].ready = true;
+
+            if (games[gameId].players.filter(player => !player.ready).length <= 0) {
+                games[gameId].started = true;
+                games[gameId].completed = 0;
+                randomText.getRandomTextWeb(2).then(text => {
+                    games[gameId].text = text;
+                    io.to(gameId).emit('start', games[gameId]);
+                    // console.log(games[gameId]);
+                }).catch(err => {
+                    games[gameId].text = randomText.getRandomText(2);
+                    console.log("API failed, using local generator");
+                    io.to(gameId).emit('start', games[gameId]);
+                });
+            } else {
+                client.emit(games[gameId]);
+            }            
         }).on('disconnect', () => {
             games[gameId].players = games[gameId].players.filter(player => player.socketId !== client.id);
             if (games[gameId].players.length <= 0) {
