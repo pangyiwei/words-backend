@@ -8,6 +8,7 @@ const randomName = require('./randomName');
 
 const PORT = process.env.PORT || 8090;
 
+const WORD_NUM = 30;
 
 let games = {};
 // Enable CORS for dev
@@ -96,12 +97,12 @@ io.on("connection", (client) => {
             if (games[gameId].players.filter(player => !player.ready).length <= 0) {
                 games[gameId].started = true;
                 games[gameId].completed = 0;
-                randomText.getRandomTextWeb(2).then(text => {
+                randomText.getRandomTextWeb(WORD_NUM).then(text => {
                     games[gameId].text = text;
                     io.to(gameId).emit('start', games[gameId]);
                     // console.log(games[gameId]);
                 }).catch(err => {
-                    games[gameId].text = randomText.getRandomText(2);
+                    games[gameId].text = randomText.getRandomText(WORD_NUM);
                     console.log("API failed, using local generator");
                     io.to(gameId).emit('start', games[gameId]);
                 });
