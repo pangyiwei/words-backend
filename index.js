@@ -90,23 +90,25 @@ io.on("connection", (client) => {
             games[gameId].players[idx].color = message.color;
             io.to(gameId).emit("message", games[gameId]);
         }).on('ready', (message) => {
-            let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
-            games[gameId].players[idx].ready = message.ready;
-            io.to(gameId).emit("message", games[gameId]);
-
-            if (games[gameId].players.filter(player => !player.ready).length <= 0) {
-                games[gameId].started = true;
-                games[gameId].completed = 0;
-                randomText.getRandomTextWeb(WORD_NUM).then(text => {
-                    games[gameId].text = text;
-                    io.to(gameId).emit('start', games[gameId]);
-                    // console.log(games[gameId]);
-                }).catch(err => {
-                    games[gameId].text = randomText.getRandomText(WORD_NUM);
-                    console.log("API failed, using local generator");
-                    io.to(gameId).emit('start', games[gameId]);
-                });
-            }            
+            if (!games[gameId].started) {
+                let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
+                games[gameId].players[idx].ready = message.ready;
+                io.to(gameId).emit("message", games[gameId]);
+    
+                if (games[gameId].players.filter(player => !player.ready).length <= 0) {
+                    games[gameId].started = true;
+                    games[gameId].completed = 0;
+                    randomText.getRandomTextWeb(WORD_NUM).then(text => {
+                        games[gameId].text = text;
+                        io.to(gameId).emit('start', games[gameId]);
+                        // console.log(games[gameId]);
+                    }).catch(err => {
+                        games[gameId].text = randomText.getRandomText(WORD_NUM);
+                        console.log("API failed, using local generator");
+                        io.to(gameId).emit('start', games[gameId]);
+                    });
+                } 
+            }
         }).on('disconnect', () => {
             games[gameId].players = games[gameId].players.filter(player => player.socketId !== client.id);
             if (games[gameId].players.length <= 0) {
