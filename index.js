@@ -43,7 +43,13 @@ io.on("connection", (client) => {
             if (username === null || username === "") {
                 username = randomName.getRandomName(games[gameId].players.map(player => player.username));
             }
-            games[gameId].players.push({username, progress: 0, socketId: client.id});
+            games[gameId].players.push(
+                {
+                    username,
+                    progress: 0,
+                    socketId: client.id
+                }
+            );
 
             client.emit('init', {...games[gameId], socketId: client.id});
             client.to(gameId).emit('message', games[gameId]);
@@ -59,11 +65,12 @@ io.on("connection", (client) => {
                 if (games[gameId].completed >= numWinners) {
                     console.log(`Game ${gameId} Complete`);
                     games[gameId].started = false;
-                    io.to(gameId).emit("gameStatus", games[gameId]);
+                    io.to(gameId).emit("end", {ended: true});
                     setTimeout(() => {
                         games[gameId].text = "";
                         games[gameId].completed = 0;
-                        io.to(gameId).emit("gameStatus", games[gameId]);
+                        games[gameId].players.forEach(player => {player.progress = 0});
+                        io.to(gameId).emit("message", games[gameId]);
                     }, 3000); 
                 }
             }
