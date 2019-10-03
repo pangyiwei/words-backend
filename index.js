@@ -58,9 +58,12 @@ io.on("connection", (client) => {
 
                 if (games[gameId].completed >= numWinners) {
                     console.log(`Game ${gameId} Complete`);
+                    games[gameId].started = false;
+                    io.to(gameId).emit("gameStatus", games[gameId]);
                     setTimeout(() => {
-                        games[gameId].started = false;
-                        io.to(gameId).emit("message", games[gameId]);
+                        games[gameId].text = "";
+                        games[gameId].completed = 0;
+                        io.to(gameId).emit("gameStatus", games[gameId]);
                     }, 3000); 
                 }
             }
@@ -70,6 +73,7 @@ io.on("connection", (client) => {
             }
         }).on('start', (message) => {
             games[gameId].started = true;
+            games[gameId].completed = 0;
             randomText.getRandomTextWeb(2).then(text => {
                 games[gameId].text = text;
                 io.to(gameId).emit('start', games[gameId]);
