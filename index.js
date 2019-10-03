@@ -50,8 +50,19 @@ io.on("connection", (client) => {
         }).on('update', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
             games[gameId].players[idx].progress = message.progress;
+
             if (message.progress === 1) {
                 games[gameId].players[idx].position = games[gameId].completed++;
+
+                const numWinners = Math.min(3, games[gameId].players.length);
+
+                if (games[gameId].completed >= numWinners) {
+                    console.log(`Game ${gameId} Complete`);
+                    setTimeout(() => {
+                        games[gameId].started = false;
+                        io.to(gameId).emit("message", games[gameId]);
+                    }, 3000); 
+                }
             }
 
             if (games[gameId].text.length > 0) {

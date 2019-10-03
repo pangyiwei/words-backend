@@ -230,7 +230,7 @@ module.exports.getRandomName = (currentList) => {
     const suffix = 1 + Math.floor(currentList.length/animalArray.length);
     while (!name) {
         randomIdx = Math.floor(Math.random() * animalArray.length);
-        console.log(randomIdx);
+        // console.log(randomIdx);
         name = currentList.indexOf("Anonymous"+animalArray[randomIdx]+suffix) < 0 ? "Anonymous" + animalArray[randomIdx] + suffix: null;
     }
     return name;
