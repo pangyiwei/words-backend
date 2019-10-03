@@ -44,6 +44,7 @@ io.on("connection", (client) => {
                     text: "",
                     players: [],
                     started: false,
+                    completed: 0
                 }
                 gameDetails.players.push({username, progress: 0, socketId: client.id});
                 games[gameId] = gameDetails;
@@ -54,17 +55,21 @@ io.on("connection", (client) => {
         }).on('update', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
             games[gameId].players[idx].progress = message.progress;
+            if (message.progress === 1) {
+                games[gameId].players[idx].position = games[gameId].completed++;
+            }
+
             if (games[gameId].text.length > 0) {
                 io.to(gameId).emit("message", games[gameId]);
             }
         }).on('start', (message) => {
             games[gameId].started = true;
-            randomText.getRandomTextWeb(50).then(text => {
+            randomText.getRandomTextWeb(2).then(text => {
                 games[gameId].text = text;
                 io.to(gameId).emit('start', games[gameId]);
                 // console.log(games[gameId]);
             }).catch(err => {
-                games[gameId].text = randomText.getRandomText(50);
+                games[gameId].text = randomText.getRandomText(2);
                 console.log("API failed, using local generator");
                 io.to(gameId).emit('start', games[gameId]);
             });
