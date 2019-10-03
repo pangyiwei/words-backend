@@ -26,32 +26,26 @@ app.get('*', (req, res) => {
 
 io.on("connection", (client) => {
     client.on('join', ({gameId, username}) => {
-        if (username === null || username === "") {
-            username = "AnonymousMonkey" + (games[gameId]? games[gameId].players.length : 0);
-        }
         client.join(gameId, () => {
             console.log("A user has joined game: " + gameId);
 
-            let gameDetails;
-            if (games[gameId]) {
-                games[gameId].players.push({username, progress: 0, socketId: client.id});
-
-                client.emit('init', {...games[gameId], socketId: client.id});
-                client.to(gameId).emit('message', games[gameId]);
-            } else {
-                gameDetails = {
+            if (!games[gameId]) {
+                games[gameId] = {
                     id: gameId, 
                     text: "",
                     players: [],
                     started: false,
                     completed: 0
                 }
-                gameDetails.players.push({username, progress: 0, socketId: client.id});
-                games[gameId] = gameDetails;
-
-                client.emit('init', {...games[gameId], socketId: client.id});
-                client.to(gameId).emit('message', games[gameId]);
             }
+
+            if (username === null || username === "") {
+                username = randomName.getRandomName(games[gameId].players.map(player => player.username));
+            }
+            games[gameId].players.push({username, progress: 0, socketId: client.id});
+
+            client.emit('init', {...games[gameId], socketId: client.id});
+            client.to(gameId).emit('message', games[gameId]);
         }).on('update', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
             games[gameId].players[idx].progress = message.progress;
