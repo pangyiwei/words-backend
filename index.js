@@ -81,7 +81,8 @@ io.on("connection", (client) => {
             }
         }).on('ready', (message) => {
             let idx = games[gameId].players.findIndex(player => player.socketId === client.id);
-            games[gameId].players[idx].ready = true;
+            games[gameId].players[idx].ready = message.ready;
+            io.to(gameId).emit("message", games[gameId]);
 
             if (games[gameId].players.filter(player => !player.ready).length <= 0) {
                 games[gameId].started = true;
@@ -95,8 +96,6 @@ io.on("connection", (client) => {
                     console.log("API failed, using local generator");
                     io.to(gameId).emit('start', games[gameId]);
                 });
-            } else {
-                io.to(gameId).emit("message", games[gameId]);
             }            
         }).on('disconnect', () => {
             games[gameId].players = games[gameId].players.filter(player => player.socketId !== client.id);
