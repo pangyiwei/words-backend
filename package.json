@@ -12,7 +12,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "word-list-json": "^0.2.0",
     "xml2js": "^0.4.22"
   }
